@@ -23,5 +23,5 @@ FILES.each do |file|
   source.translate!('[a-z]{2,}')
   source.translate!('[A-Z]{2,}', :upcase)
   source.translate!('[A-Z][a-z]+', :capitalize)
-  puts source
+  File.write(file, source)
 end
