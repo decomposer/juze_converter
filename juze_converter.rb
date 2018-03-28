@@ -11,11 +11,14 @@ BLACKLIST.each { |b| WORDS.delete(b) }
 
 class String
   def translate!(pattern, method = nil)
-    gsub!(pattern) do |match|
-      if WORDS.key?(match.downcase)
-        method ? WORDS[match.downcase].send(method) : WORDS[match.downcase].downcase
+    gsub!(/(^|[_\W])(#{pattern})/) do
+      space = Regexp.last_match[1]
+      word = Regexp.last_match[2]
+      if WORDS.key?(word.downcase)
+        space + (method ? WORDS[word.downcase].send(method) : WORDS[word.downcase].downcase)
+        TRANSLATED.add(word.downcase)
       else
-        match
+        space + word
       end
     end
   end
