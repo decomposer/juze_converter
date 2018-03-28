@@ -6,6 +6,9 @@ FILES = ARGV
 
 WORDS = YAML.load_file(File.expand_path('../words.yaml', __FILE__))
 
+BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
+BLACKLIST.each { |b| WORDS.delete(b) }
+
 class String
   def translate!(pattern, method = nil)
     gsub!(pattern) do |match|
