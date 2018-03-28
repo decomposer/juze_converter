@@ -1,26 +1,26 @@
-#define FOO BAR
+#define COLOUR_MAP RESINISE
 
-class FooTester
+class Colourise
 {
 public:
-    void foo() {}
+    void advertise() {}
     void fooo() {}
-    void fooTest() {}
-    void testBar() {}
-    void testFooBar() {}
-    void fooFooBar() {}
-    void foo_bar() {}
-    void test_foo_bar() {}
+    void advisors() {}
+    void testAdvisors() {}
+    void testAdvisorsAltho() {}
+    void aluminiseAmoeba() {}
+    void aluminise_amoeba() {}
+    void test_aluminise_amoeba() {}
 };
 
 int main()
 {
-    FooTester foo;
-    foo.foo();
-    foo.fooTest();
-    foo.testBar();
-    foo.testFooBar();
-    foo.foo_bar();
-    foo.test_foo_bar();
+    Colourise colourise;
+    colourise.advertize();
+    colourise.advisors();
+    colourise.testAdvisors();
+    colourise.testAdvisorsAltho();
+    colourise.aluminise_amoeba();
+    colourise.test_aluminise_amoeba();
     return 0;
 }
