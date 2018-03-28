@@ -2,7 +2,7 @@ require 'yaml'
 
 FILES = ARGV
 
-WORDS = YAML.load_file('words.yaml')
+WORDS = YAML.load_file(File.expand_path('../words.yaml', __FILE__))
 
 class String
   def translate!(pattern, method = nil)
