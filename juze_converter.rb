@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# git reset --hard && find . -type f -exec grep -Iq . {} \; -and -print0 | time xargs -0 ../JuzeConverter/juze_converter.rb
+
 require 'yaml'
 
 FILES = ARGV
