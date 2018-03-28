@@ -8,6 +8,7 @@ public:
     void fooTest() {}
     void testBar() {}
     void testFooBar() {}
+    void fooFooBar() {}
     void foo_bar() {}
     void test_foo_bar() {}
 };
