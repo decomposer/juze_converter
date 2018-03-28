@@ -20,8 +20,13 @@ end
 
 FILES.each do |file|
   source = File.read(file)
-  source.translate!(/[a-z]{2,}/)
-  source.translate!(/[A-Z]{2,}/, :upcase)
-  source.translate!(/[A-Z][a-z]+/, :capitalize)
-  File.write(file, source)
+  begin
+    source.translate!(/[a-z]{2,}/)
+    source.translate!(/[A-Z]{2,}/, :upcase)
+    source.translate!(/[A-Z][a-z]+/, :capitalize)
+    File.write(file, source)
+    puts "Converted: #{file}"
+  rescue => ex
+    warn "Couldn't convert: #{file}, #{ex}"
+  end
 end
