@@ -6,13 +6,11 @@ WORDS = YAML.load_file(File.expand_path('../words.yaml', __FILE__))
 
 class String
   def translate!(pattern, method = nil)
-    gsub!(/([\s_]*)(#{pattern})/) do
-      space = Regexp.last_match[1]
-      word = Regexp.last_match[2]
-      if WORDS.key?(word.downcase)
-        space + (method ? WORDS[word.downcase].send(method) : WORDS[word.downcase].downcase)
+    gsub!(pattern) do |match|
+      if WORDS.key?(match.downcase)
+        method ? WORDS[match.downcase].send(method) : WORDS[match.downcase].downcase
       else
-        space + word
+        match
       end
     end
   end
@@ -20,8 +18,8 @@ end
 
 FILES.each do |file|
   source = File.read(file)
-  source.translate!('[a-z]{2,}')
-  source.translate!('[A-Z]{2,}', :upcase)
-  source.translate!('[A-Z][a-z]+', :capitalize)
+  source.translate!(/[a-z]{2,}/)
+  source.translate!(/[A-Z]{2,}/, :upcase)
+  source.translate!(/[A-Z][a-z]+/, :capitalize)
   File.write(file, source)
 end
