@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'open3'
 require 'yaml'
 require 'fileutils'
 
@@ -28,7 +29,9 @@ end
 
 def text_files(dir)
   files = Dir.glob("#{dir}/**/*").select { |file| File.file?(file) }
-  types = IO.popen(['file', '-b', '--mime-type', *files]).read.split("\n")
+  types, _ = Open3.capture2('xargs', '-0', 'file', '-b', '--mime-type',
+                            stdin_data: files.join("\0"))
+  types = types.split("\n")
   indexes = []
   types.each_with_index { |t, i| indexes.push(i) if t =~ /^text\// }
   files.values_at(*indexes)
