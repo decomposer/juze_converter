@@ -6,8 +6,12 @@ require 'fileutils'
 
 DIR = ARGV.shift
 DICTIONARY = YAML.load_file(File.expand_path('../dictionary.yaml', __FILE__))
+EXTRAS = YAML.load_file(File.expand_path('../extras.yaml', __FILE__))
 BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
+
+DICTIONARY.merge!(EXTRAS)
 BLACKLIST.each { |b| DICTIONARY.delete(b) }
+
 $translated = {}
 
 class String
