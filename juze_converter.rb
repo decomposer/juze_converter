@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'yaml'
+require 'fileutils'
 
 DIR = ARGV.shift
 WORDS = YAML.load_file(File.expand_path('../words.yaml', __FILE__))
@@ -21,6 +22,7 @@ class String
         space + word
       end
     end
+    self
   end
 end
 
@@ -42,6 +44,14 @@ text_files(DIR).each do |file|
     puts "Converted: #{file}"
   rescue => ex
     warn "Couldn't convert: #{file}, #{ex}"
+  end
+
+  renamed = file.clone.translate!(/[a-z]{2,}/).translate!(/[A-Z][a-z]+/, :capitalize)
+
+  if file != renamed
+    puts "Renaming: #{file} -> #{renamed}"
+    FileUtils.mkdir_p(File.dirname(renamed))
+    system('git', 'mv', file, renamed)
   end
 end
 
