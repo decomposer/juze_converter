@@ -1,27 +1,22 @@
 #!/usr/bin/env ruby
 
-# git reset --hard && find . -type f -exec grep -Iq . {} \; -and -print0 | time xargs -0 ../JuzeConverter/juze_converter.rb
-
 require 'yaml'
-require 'set'
 
-FILES = ARGV
-
+DIR = ARGV.shift
 WORDS = YAML.load_file(File.expand_path('../words.yaml', __FILE__))
-
 BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
 BLACKLIST.each { |b| WORDS.delete(b) }
-
-TRANSLATED = Set.new
+$translated = {}
 
 class String
   def translate!(pattern, method = nil)
     gsub!(/(^|[_\W])(#{pattern})/) do
       space = Regexp.last_match[1]
       word = Regexp.last_match[2]
-      if WORDS.key?(word.downcase)
-        TRANSLATED.add(word.downcase)
-        space + (method ? WORDS[word.downcase].send(method) : WORDS[word.downcase].downcase)
+      down = word.downcase
+      if WORDS.key?(down)
+        $translated[down] = WORDS[down]
+        space + (method ? WORDS[down].send(method) : WORDS[down].downcase)
       else
         space + word
       end
@@ -29,7 +24,15 @@ class String
   end
 end
 
-FILES.each do |file|
+def text_files(dir)
+  files = Dir.glob("#{dir}/**/*").select { |file| File.file?(file) }
+  types = IO.popen(['file', '-b', '--mime-type', *files]).read.split("\n")
+  indexes = []
+  types.each_with_index { |t, i| indexes.push(i) if t =~ /^text\// }
+  files.values_at(*indexes)
+end
+
+text_files(DIR).each do |file|
   source = File.read(file)
   begin
     source.translate!(/[a-z]{2,}/)
@@ -42,4 +45,4 @@ FILES.each do |file|
   end
 end
 
-puts TRANSLATED.to_a.sort.join("\n")
+$translated.keys.sort.each { |k| puts "#{k}: #{$translated[k]}" }
