@@ -41,9 +41,9 @@ end
 text_files(DIR).each do |file|
   source = File.read(file)
   begin
-    source.translate!(/[a-z]{2,}/)
-    source.translate!(/[A-Z]{2,}/, :upcase)
     source.translate!(/[A-Z][a-z]+/, :capitalize)
+    source.translate!(/[A-Z]{2,}/, :upcase)
+    source.translate!(/[a-z]{2,}/)
     File.write(file, source)
     puts "Converted: #{file}"
   rescue => ex
