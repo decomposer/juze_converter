@@ -12,7 +12,8 @@ $translated = {}
 
 class String
   def translate!(pattern, method = nil)
-    gsub!(/(^|[_\W])(#{pattern})/) do
+    letter_as_separator = method ? 'a-z' : ''
+    gsub!(/(^|[_\W#{letter_as_separator}])(#{pattern})/) do
       space = Regexp.last_match[1]
       word = Regexp.last_match[2]
       down = word.downcase
