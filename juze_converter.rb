@@ -5,9 +5,9 @@ require 'yaml'
 require 'fileutils'
 
 DIR = ARGV.shift
-WORDS = YAML.load_file(File.expand_path('../words.yaml', __FILE__))
+DICTIONARY = YAML.load_file(File.expand_path('../dictionary.yaml', __FILE__))
 BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
-BLACKLIST.each { |b| WORDS.delete(b) }
+BLACKLIST.each { |b| DICTIONARY.delete(b) }
 $translated = {}
 
 class String
@@ -17,9 +17,9 @@ class String
       space = Regexp.last_match[1]
       word = Regexp.last_match[2]
       down = word.downcase
-      if WORDS.key?(down)
-        $translated[down] = WORDS[down]
-        space + (method ? WORDS[down].send(method) : WORDS[down].downcase)
+      if DICTIONARY.key?(down)
+        $translated[down] = DICTIONARY[down]
+        space + (method ? DICTIONARY[down].send(method) : DICTIONARY[down].downcase)
       else
         space + word
       end
