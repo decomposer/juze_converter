@@ -16,12 +16,12 @@ BLACKLIST.each { |b| DICTIONARY.delete(b) }
 $translated = {}
 
 class String
-  def translate!(pattern, additional_separators = '', method = nil)
-    gsub!(/(?<=^|[_\W#{additional_separators}])#{pattern}/) do |word|
+  def translate!(pattern, separators: '', transform: nil)
+    gsub!(/(?<=^|[_\W#{separators}])#{pattern}/) do |word|
       down = word.downcase
       if DICTIONARY.key?(down)
         $translated[down] = DICTIONARY[down]
-        method ? DICTIONARY[down].send(method) : DICTIONARY[down].downcase
+        transform ? DICTIONARY[down].send(transform) : DICTIONARY[down].downcase
       else
         word
       end
@@ -43,8 +43,8 @@ end
 text_files(DIR).each do |file|
   source = File.read(file)
   begin
-    source.translate!(/[A-Z][a-z]+/, '\w', :capitalize)
-    source.translate!(/[A-Z]{2,}/, 'a-z', :upcase)
+    source.translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize)
+    source.translate!(/[A-Z]{2,}/, separators: 'a-z', transform: :upcase)
     source.translate!(/[a-z]{2,}/)
     SPELLING_MISTAKES.each { |k, v| source.gsub!(k, v) }
     File.write(file, source)
@@ -53,7 +53,9 @@ text_files(DIR).each do |file|
     warn "Couldn't convert: #{file}, #{ex}"
   end
 
-  renamed = file.clone.translate!(/[A-Z][a-z]+/, '\w', :capitalize).translate!(/[a-z]{2,}/)
+  renamed = file.clone
+              .translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize)
+              .translate!(/[a-z]{2,}/)
 
   if file != renamed
     puts "Renaming: #{file} -> #{renamed}"
