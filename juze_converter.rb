@@ -8,6 +8,7 @@ DIR = ARGV.shift
 DICTIONARY = YAML.load_file(File.expand_path('../dictionary.yaml', __FILE__))
 EXTRAS = YAML.load_file(File.expand_path('../extras.yaml', __FILE__))
 BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
+SPELLING_MISTAKES = YAML.load_file(File.expand_path('../spelling_mistakes.yaml', __FILE__)).invert
 
 DICTIONARY.merge!(EXTRAS)
 BLACKLIST.each { |b| DICTIONARY.delete(b) }
@@ -45,6 +46,7 @@ text_files(DIR).each do |file|
     source.translate!(/[A-Z][a-z]+/, '\w', :capitalize)
     source.translate!(/[A-Z]{2,}/, 'a-z', :upcase)
     source.translate!(/[a-z]{2,}/)
+    SPELLING_MISTAKES.each { |k, v| source.gsub!(k, v) }
     File.write(file, source)
     puts "Converted: #{file}"
   rescue => ex
