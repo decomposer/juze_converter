@@ -15,11 +15,15 @@ BLACKLIST.each { |b| DICTIONARY.delete(b) }
 
 $translated = {}
 
+def in_ranges?(ranges, index)
+  ranges.reduce(false) { |result, range| result || range.include?(index) }
+end
+
 class String
-  def translate!(pattern, separators: '', transform: nil)
+  def translate!(pattern, separators: '', transform: nil, ignore: [])
     gsub!(/(?<=^|[_\W#{separators}])#{pattern}/) do |word|
       down = word.downcase
-      if DICTIONARY.key?(down)
+      if DICTIONARY.key?(down) && !in_ranges?(ignore, Regexp.last_match.begin(0))
         $translated[down] = DICTIONARY[down]
         transform ? DICTIONARY[down].send(transform) : DICTIONARY[down].downcase
       else
@@ -43,8 +47,13 @@ end
 text_files(DIR).each do |file|
   source = File.read(file)
   begin
-    source.translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize)
-    source.translate!(/[A-Z]{2,}/, separators: 'a-z', transform: :upcase)
+    base64 = source.to_enum(:scan, /base64.+?["\n]/).map do
+      m = Regexp.last_match
+      m.begin(0)..m.begin(0) + m.to_s.size
+    end
+  
+    source.translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize, ignore: base64)
+    source.translate!(/[A-Z]{2,}/, separators: 'a-z', transform: :upcase, ignore: base64)
     source.translate!(/[a-z]{2,}/)
     SPELLING_MISTAKES.each { |k, v| source.gsub!(k, v) }
     File.write(file, source)
