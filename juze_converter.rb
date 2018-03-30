@@ -73,4 +73,6 @@ text_files(DIR).each do |file|
   end
 end
 
+puts "\nWords translated:\n\n"
+
 $translated.keys.sort.each { |k| puts "#{k}: #{$translated[k]}" }
