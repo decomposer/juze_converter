@@ -32,6 +32,12 @@ class String
     end
     self
   end
+  def ranges(pattern)
+    to_enum(:scan, pattern).map do
+      m = Regexp.last_match
+      m.begin(0)..m.begin(0) + m.to_s.size
+    end
+  end
 end
 
 def text_files(dir)
@@ -47,14 +53,10 @@ end
 text_files(DIR).each do |file|
   source = File.read(file)
   begin
-    base64 = source.to_enum(:scan, /base64.+?["\n]/).map do
-      m = Regexp.last_match
-      m.begin(0)..m.begin(0) + m.to_s.size
-    end
-  
-    source.translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize, ignore: base64)
-    source.translate!(/[A-Z]{2,}/, separators: 'a-z', transform: :upcase, ignore: base64)
-    source.translate!(/[a-z]{2,}/)
+    ignore = source.ranges(/base64.+?["\n]/) + source.ranges(/\w{3,}:\/\/[\w\-:@\/\.]+/)
+    source.translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize, ignore: ignore)
+    source.translate!(/[A-Z]{2,}/, separators: 'a-z', transform: :upcase, ignore: ignore)
+    source.translate!(/[a-z]{2,}/, ignore: ignore)
     SPELLING_MISTAKES.each { |k, v| source.gsub!(k, v) }
     File.write(file, source)
     puts "Converted: #{file}"
