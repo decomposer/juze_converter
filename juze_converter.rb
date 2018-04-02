@@ -4,7 +4,7 @@ require 'open3'
 require 'yaml'
 require 'fileutils'
 
-DIR = ARGV.shift
+DIR = ARGV.shift || raise('You must specify a source directory')
 DICTIONARY = YAML.load_file(File.expand_path('../dictionary.yaml', __FILE__))
 EXTRAS = YAML.load_file(File.expand_path('../extras.yaml', __FILE__))
 BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
