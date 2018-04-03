@@ -6,7 +6,8 @@ require 'fileutils'
 
 DIR = ARGV.shift || raise('You must specify a source directory')
 DICTIONARY = YAML.load_file(File.expand_path('../dictionary.yaml', __FILE__))
-EXTRAS = YAML.load_file(File.expand_path('../extras.yaml', __FILE__))
+               .invert.reject { |us, uk| us.size <= 2 || us == uk.gsub('-', '') }
+EXTRAS = YAML.load_file(File.expand_path('../extras.yaml', __FILE__)).invert
 BLACKLIST = YAML.load_file(File.expand_path('../blacklist.yaml', __FILE__))
 SPELLING_MISTAKES = YAML.load_file(File.expand_path('../spelling_mistakes.yaml', __FILE__)).invert
 
@@ -53,10 +54,13 @@ end
 text_files(DIR).each do |file|
   source = File.read(file)
   begin
-    ignore = source.ranges(/base64.+?["\n]/) + source.ranges(/\w{3,}:\/\/[\w\-:@\/\.]+/)
-    source.translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize, ignore: ignore)
-    source.translate!(/[A-Z]{2,}/, separators: 'a-z', transform: :upcase, ignore: ignore)
-    source.translate!(/[a-z]{2,}/, ignore: ignore)
+    ignore = source.ranges(/base64.+?["\n]/) +
+             source.ranges(/\w{3,}:\/\/[\w\-:@\/\.]+/) +
+             source.ranges(/\-W[a-z\-]+/) +
+             source.ranges(/(NS|CG|kCT|kIOHID)[a-zA-Z]+/)
+    source.translate!(/[A-Z][a-z]{2,}+/, separators: '\w', transform: :capitalize, ignore: ignore)
+    source.translate!(/[A-Z]{3,}/, separators: 'a-z', transform: :upcase, ignore: ignore)
+    source.translate!(/[a-z]{3,}/, ignore: ignore)
     SPELLING_MISTAKES.each { |k, v| source.gsub!(k, v) }
     File.write(file, source)
     puts "Converted: #{file}"
@@ -65,8 +69,8 @@ text_files(DIR).each do |file|
   end
 
   renamed = file.clone
-              .translate!(/[A-Z][a-z]+/, separators: '\w', transform: :capitalize)
-              .translate!(/[a-z]{2,}/)
+              .translate!(/[A-Z][a-z]{2,}/, separators: '\w', transform: :capitalize)
+              .translate!(/[a-z]{3,}/)
 
   if file != renamed
     puts "Renaming: #{file} -> #{renamed}"

@@ -1,2 +1,11 @@
-NSURLErrorCancelled: NSURLErrorCanceled
-kAudioDevicePropertyPlayThru: kAudioDevicePropertyPlayThrough
+'[window isMiniaturized]': '[window isMiniaturised]'
+'[window miniaturize:': '[window miniaturise:'
+'synchronize]': 'synchronise]'
+MATH_H: MATHS_H
+defaultCenter: defaultCentre
+initializer_list: initialiser_list
+instalPath: installPath
+localizedDescription: localisedDescription
+notificationCenter: notificationCentre
+setCollectionBehavior: setCollectionBehaviour
+suspensionBehavior: suspensionBehaviour
